@@ -1,1 +1,1 @@
-# legget_garg
+# Legget-Garg and QNDM 
