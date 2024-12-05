@@ -1,61 +1,168 @@
-#!/usr/bin/python3
-from qiskit.circuit import Parameter,ParameterVector
-from qiskit.circuit.library import PauliEvolutionGate
-from qndm.layers.unitaries_gradient import *
+import numpy as np
+import os
+import csv
+from qiskit.circuit import QuantumCircuit
+from qiskit_aer import AerSimulator
+from qiskit_aer.noise import NoiseModel
+from dotenv import load_dotenv
+
+#==========================================================#
+# 
+# Quantum Circuit Utility Functions
+#==========================================================#
+
+def initial_state(qc: QuantumCircuit, 
+                  sys: int, 
+                  theta: float, 
+                  phi: int):
+
+    """
+    Initialize the system qubit in a specific state.
+
+    Args:
+        qc (QuantumCircuit): Quantum circuit.
+        sys (int): Index of the system qubit.
+        theta (float): Rotation angle for the initial state.
+        phi (float): Phase angle for the initial state.
+    """
+    
+    qc.h(sys)
+    qc.rz(theta, sys)
+    qc.h(sys)
+    qc.rz(phi, sys)
+
+    return None
+
+
+def apply_U(qc: QuantumCircuit, 
+            sys: int, 
+            omega_tau: float):
+
+    """
+    Apply exp(-i * omega * tau * X / 2) evolution.
+
+    Args:
+        qc (QuantumCircuit): Quantum circuit.
+        sys (int): Index of the system qubit.
+        omega_tau (float): Evolution parameter.
+    """
+
+    qc.h(sys)
+    qc.rz(omega_tau, sys)
+    qc.h(sys)
+    
+    return None
+
+
+def apply_relaxation(qc: QuantumCircuit, 
+                     sys: int, 
+                     env: int, 
+                     p_deco: float, 
+                     basis: str):
+    
+    """
+    Apply relaxation dynamics in a specified basis.
+
+    Args:
+        qc (QuantumCircuit): Quantum circuit.
+        sys (int): Index of the system qubit.
+        env (int): Index of the environment qubit.
+        p_deco (float): Decoherence probability.
+        basis (str): Basis of relaxation ('z' or 'x').
+    """
+
+    theta_deco = 2 * np.arccos(np.sqrt(1 - p_deco))
+    
+    if basis == "x":
+        qc.h(sys)
+    
+    qc.cx(env, sys)
+    qc.rz(theta_deco, sys)
+    qc.cx(env, sys)
+    
+    if basis == "x":
+        qc.h(sys)
+
+    return None
 
 
 
-#Quantum Circuit
-def qndm_circuit(circ,shift_position,pm,num_qub,num_l,val_g,q_d, flag : str):
 
-  '''
-  Args:
-    - pm --  means the operator H x p (system - detector coupling)
+#==========================================================#
+# 
+# Calculation of the correlators
+#==========================================================#
 
-  '''
+def calculate_correlator(qc: QuantumCircuit, 
+                         sys: int, 
+                         env: int, 
+                         theta: float, 
+                         phi: float, 
+                         omega_tau: float, 
+                         p_deco: float, 
+                         shots: int, 
+                         sequence: str, 
+                         backend) -> None:
 
-  #initialization of detector
-  circ.h(q_d)
+    """
+    General correlator calculation based on a specified sequence.
 
-  #initialization of paramenters \theta vector 
-  params = ParameterVector("theta", length=len(val_g))
+    Args:
+        qc (QuantumCircuit): Quantum circuit.
+        sys (int): System qubit index.
+        env (list): Environment qubits indices.
+        theta (float): Initial state parameter.
+        phi (float): Initial state parameter.
+        omega_tau (float): Evolution parameter.
+        p_deco (float): Decoherence probability.
+        shots (int): Number of measurement shots.
+        sequence (str): Measurement and evolution sequence ("C_12", "C_13", "C_23").
 
-  #Lists with the qubits position information to compose circ with the U and the PauliEvolutionGates
-  qubits_U = []
-  qubits_exp = []
-  for i in range(num_qub):
-    qubits_U.append(i)
-    qubits_exp.append(i)
-  qubits_exp.insert(0,num_qub)
+    Returns:
+        float: Correlator mean value.
+    """
+    
+    initial_state(qc, sys, theta, phi)
 
-  #first unitary trasformation: U1:|00...0>->|\psi(\theta - shift*e_(shift_position))
-  unitary1=U1(val_g,params,num_qub,num_l,shift,shift_position,ent_gate)
-  circ.compose(unitary1, qubits=qubits_U, inplace=True)
+    if sequence == "C_12":
+        
+        qc.measure(sys, 0)
+        apply_U(qc, sys, omega_tau)
+        apply_relaxation(qc, sys, env[0], p_deco, basis="x")
+        qc.measure(sys, 1)
+        apply_U(qc, sys, omega_tau)
+        apply_relaxation(qc, sys, env[1], p_deco, basis="z")
+    
 
-  #first coupling interation
-  evo_time = Parameter('p_deco')
-  trotterized_op = PauliEvolutionGate(pm,evo_time)
-  circ.append(trotterized_op, qubits_exp)
+    elif sequence == "C_13":
+        
+        qc.measure(sys, 0)
+        apply_U(qc, sys, omega_tau)
+        apply_relaxation(qc, sys, env[0], p_deco, basis="x")
+        apply_U(qc, sys, omega_tau)
+        apply_relaxation(qc, sys, env[1], p_deco, basis="z")
+        qc.measure(sys, 1)
+    
 
- 
-  #second unitary trasformation: U1_dag|\psi(\theta - shift*e_(shift_position))->|00...0>
-  unitary1_dag=U1_dag(val_g,params,num_qub,num_l,shift,shift_position,ent_gate)
-  circ.compose(unitary1_dag, qubits=qubits_U, inplace=True)
+    elif sequence == "C_23":
+        
+        apply_U(qc, sys, omega_tau)
+        apply_relaxation(qc, sys, env[0], p_deco, basis="x")
+        qc.measure(sys, 0)
+        apply_U(qc, sys, omega_tau)
+        apply_relaxation(qc, sys, env[1], p_deco, basis="z")
+        qc.measure(sys, 1)
 
-  #third unitary trasformation: U2:|00...0>->|\psi(\theta + shift*e_(shift_position))
-  unitary2=U2(val_g,params,num_qub,num_l,shift,shift_position,ent_gate)
-  circ.compose(unitary2, qubits=qubits_U, inplace=True)
 
+    result = backend.run(qc, shots=shots).result()
+    counts = result.get_counts()
 
-  #second coupling interation
-  evo_time2 = Parameter('p_deco2')
-  trotterized_op2 = PauliEvolutionGate(pm,-evo_time2)
-  circ.append(trotterized_op2, qubits_exp)
-  
+    p00 = counts.get("00", 0)
+    p01 = counts.get("01", 0)
+    p10 = counts.get("10", 0)
+    p11 = counts.get("11", 0)
 
-  #qubit for measure the detector
-  circ.h(q_d)
-  circ.s(q_d)
-  circ.h(q_d)
+    mean = (p00 + p11 - p01 - p10) / shots
 
-  return None
+    return mean
+
