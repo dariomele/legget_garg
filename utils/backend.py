@@ -18,8 +18,10 @@ def load_backend(simulate, noise, min_num_qubits):
         if noise:
             from qiskit_ibm_runtime.fake_provider import FakeBogotaV2
             noise_model = NoiseModel.from_backend(FakeBogotaV2())
+            print('backend con noise')
             return AerSimulator(noise_model=noise_model)
         else:
+            print('backend senza noise')
             return AerSimulator()
     else:
         from qiskit_ibm_runtime import QiskitRuntimeService

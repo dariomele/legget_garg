@@ -26,8 +26,8 @@ def run_simulation(theta: float,
                    n_steps : int,
                    output_dir,
                    simulation_id : int,
-                   simulate = False,
-                   noise = False) -> None:
+                   simulate,
+                   noise) -> None:
     
     #
     # Circuit settings
@@ -42,28 +42,28 @@ def run_simulation(theta: float,
     
     omega_tau_values = np.linspace(0, 2 * np.pi, n_steps)
 
+    print(noise)
+
     backend = load_backend(simulate, noise, min_num_qubits=5)
 
-    output_folder = f"/mnt/project_mnt/farm_fs/dmelegari/legget_garg/results_lg/simulations_with_shots/{n_shots}_shots/"
-    os.makedirs(output_folder, exist_ok=True)
 
     # print_runcard here before running the simulation
     print_runcard(
-        output_folder,
+        output_dir,
         p_deco=p_deco,
         n_qubits=n_qubits,
         theta=theta,
         phi=phi,
-        shots=n_shots,
+        shots=shots,
         sequences=sequences,
         n_steps=n_steps
     )
 
     # Define the output file based on the noise condition
     if noise:
-        output_file = os.path.join(output_folder, f"correlators_results_{simulation_id}_noise.csv")
+        output_file = os.path.join(output_dir, f"correlators_results_{simulation_id}_noise.csv")
     else:
-        output_file = os.path.join(output_folder, f"correlators_results_{simulation_id}_noiseless.csv")
+        output_file = os.path.join(output_dir, f"correlators_results_{simulation_id}_noiseless.csv")
 
     with open(output_file, mode="w", newline="") as csvfile:
         writer = csv.writer(csvfile)
@@ -73,7 +73,7 @@ def run_simulation(theta: float,
             correlators = []
             for seq in sequences:
                 qc = QuantumCircuit(n_qubits, n_classical)
-                mean = calculate_correlator(qc, sys, env, theta, phi, omega_tau, p_deco, n_shots, seq, backend)
+                mean = calculate_correlator(qc, sys, env, theta, phi, omega_tau, p_deco, shots, seq, backend)
                 correlators.append(mean)    
 
             C_12, C_13, C_23 = correlators
@@ -94,8 +94,8 @@ if __name__ == "__main__":
     n_shots       = int(sys.argv[4])
     n_steps       = int(sys.argv[5])
     output_dir    = sys.argv[6]
-    simulate      = sys.argv[7]  # Convert 0 or 1 to False or True
-    noise         = sys.argv[8]
+    simulate      = sys.argv[7].lower() == "true"  # Converti 0/1 o true/false in un booleano
+    noise         = sys.argv[8].lower() == "true" # Converti 0/1 o true/false in un booleano
     n_simulations = int(sys.argv[9])
 
     print(noise)

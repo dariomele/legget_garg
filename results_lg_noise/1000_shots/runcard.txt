@@ -1,0 +1,7 @@
+p_deco: 0.0
+n_qubits: 3
+theta: 1.5707963267948966
+phi: 1.5707963267948966
+shots: 1000
+sequences: ['C_12', 'C_13', 'C_23']
+n_steps: 1000
