@@ -88,15 +88,15 @@ def run_simulation(theta: float,
 
 if __name__ == "__main__":
     
-    theta         = float(sys.argv[1])
-    phi           = float(sys.argv[2])
-    p_deco        = float(sys.argv[3])
-    n_shots       = int(sys.argv[4])
-    n_steps       = int(sys.argv[5])
-    output_dir    = sys.argv[6]
-    simulate      = sys.argv[7].lower() == "true"  # Converti 0/1 o true/false in un booleano
-    noise         = sys.argv[8].lower() == "true" # Converti 0/1 o true/false in un booleano
-    n_simulations = int(sys.argv[9])
+    theta         = float(sys.argv[1])             # initial state parameter
+    phi           = float(sys.argv[2])             # initial state parameter
+    p_deco        = float(sys.argv[3])             # decoherence probability
+    n_shots       = int(sys.argv[4])               # number of shots
+    n_steps       = int(sys.argv[5])               # Number of steps used to discretize \omega\tau in 0...2pi
+    output_dir    = sys.argv[6]                    # directory path to store the results
+    simulate      = sys.argv[7].lower() == "true"  # Convert True/False into a boolean
+    noise         = sys.argv[8].lower() == "true"  # Convert True/False into a boolean
+    n_simulations = int(sys.argv[9])               # Number of simulations
 
     print(noise)
 
