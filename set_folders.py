@@ -6,7 +6,7 @@ base_dir      = "/mnt/project_mnt/farm_fs/dmelegari/legget_garg"
 shots_list    = ["1000", "10000", "100000"]  
 theta         = np.pi/2
 phi           = np.pi/2
-p_deco        = 0
+p_deco        = 0.3
 n_steps       = 1000
 simulate      = True
 noise         = False
@@ -67,7 +67,13 @@ def create_folders_and_scripts():
     
     # Creazione delle cartelle e degli script
     for shots in shots_list:
-        output_dir = os.path.join(base_dir, "results_lg_noiseless", f"{shots}_shots")  # Specifico per ogni valore di shots
+
+        if noise == True:
+            output_dir = os.path.join(base_dir, f"results_lg/results_lg_noise/p_deco_{p_deco}", f"{shots}_shots")  # Specifico per ogni valore di shots
+        
+        if noise == False:
+            output_dir = os.path.join(base_dir, f"results_lg/results_lg_noiseless/p_deco_{p_deco}", f"{shots}_shots")  # Specifico per ogni valore di shots
+
         folder_path = output_dir
         
         # Crea la cartella per il numero di shots
