@@ -5,7 +5,7 @@ import glob
 import os
 
 # Percorso ai file CSV
-file_pattern = "/mnt/project_mnt/farm_fs/dmelegari/legget_garg/results_lg_noise/100000_shots/correlators_results_*_noise.csv"
+file_pattern = "/mnt/project_mnt/farm_fs/dmelegari/legget_garg/results_lg/results_lg_noiseless/p_deco_0.3/10000_shots/correlators_results_*_noiseless.csv"
 file_list = glob.glob(file_pattern)
 
 

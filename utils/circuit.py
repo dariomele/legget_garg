@@ -128,10 +128,10 @@ def calculate_correlator(qc: QuantumCircuit,
         
         qc.measure(sys, 0)
         apply_U(qc, sys, omega_tau)
-        apply_relaxation(qc, sys, env[0], p_deco, basis="x")
+        apply_relaapply_relaxationxation(qc, sys, env[0], p_deco, basis="x")
         qc.measure(sys, 1)
         apply_U(qc, sys, omega_tau)
-        apply_relaxation(qc, sys, env[1], p_deco, basis="z")
+        (qc, sys, env[1], p_deco, basis="z")
     
 
     elif sequence == "C_13":

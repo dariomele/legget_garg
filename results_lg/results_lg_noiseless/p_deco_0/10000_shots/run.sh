@@ -23,4 +23,4 @@ echo "PYTHONPATH: $PYTHONPATH"
 
 # Run the main Python script with the provided parameters
 echo 'Running main script...'
-python3 /mnt/project_mnt/farm_fs/dmelegari/legget_garg/src/main.py 1.5707963267948966 1.5707963267948966 0 10000 1000 /mnt/project_mnt/farm_fs/dmelegari/legget_garg/results_lg/results_lg_noiseless/p_deco_0/10000_shots True False 100
+python3 /mnt/project_mnt/farm_fs/dmelegari/legget_garg/src/main.py 1.5707963267948966 1.5707963267948966 0 10000 1000 /mnt/project_mnt/farm_fs/dmelegari/legget_garg/results_lg_noiseless/10000_shots True False 100
