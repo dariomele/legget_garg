@@ -4,10 +4,12 @@ import matplotlib.pyplot as plt
 import glob
 import os
 
-# Percorso ai file CSV
-file_pattern = "/mnt/project_mnt/farm_fs/dmelegari/legget_garg/results_lg/results_lg_noiseless/p_deco_0.3/10000_shots/correlators_results_*_noiseless.csv"
-file_list = glob.glob(file_pattern)
+n_shots = 10000
+constant_error = 1 / np.sqrt(n_shots)
 
+# Percorso ai file CSV
+file_pattern = f"/mnt/project_mnt/farm_fs/dmelegari/legget_garg/results_lg/results_lg_noiseless/p_deco_0/{n_shots}_shots/correlators_results_*_noiseless.csv"
+file_list = glob.glob(file_pattern)
 
 # Inizializzare un dizionario per raccogliere i valori
 results = {}
@@ -36,16 +38,27 @@ for file in file_list:
 # Calcolare la media e la radice della deviazione standard per ogni omega_tau
 omega_tau_values = []
 mean_values = []
-error_values = []
+std_error_values = []
 
 for omega_tau, K_3_values in sorted(results.items()):
     omega_tau_values.append(omega_tau)
     mean_values.append(np.mean(K_3_values))
-    error_values.append(np.sqrt(np.std(K_3_values)))
+    std_error_values.append(np.sqrt(np.std(K_3_values)))
 
-# Errore costante
-n_shots = 100000
-constant_error = 1 / np.sqrt(n_shots)
+# Creare un DataFrame con i risultati
+output_df = pd.DataFrame({
+    'omega_tau': omega_tau_values,
+    'mean_K_3': mean_values,
+    'std_error': std_error_values,
+    'constant_error': [constant_error] * len(omega_tau_values)
+})
+
+# Percorso per salvare il file CSV
+output_dir = os.path.dirname(file_pattern)
+output_csv = os.path.join(output_dir, "mean_and_error_values.csv")
+output_df.to_csv(output_csv, index=False)
+
+print(f"Results saved as CSV: {output_csv}")
 
 # Creare il grafico
 plt.figure(figsize=(10, 6))
@@ -54,8 +67,8 @@ plt.plot(omega_tau_values, mean_values, label='Mean of $K_3$', color='blue')
 # Prima banda di errore (deviazione standard)
 plt.fill_between(
     omega_tau_values,
-    np.array(mean_values) - np.array(error_values),
-    np.array(mean_values) + np.array(error_values),
+    np.array(mean_values) - np.array(std_error_values),
+    np.array(mean_values) + np.array(std_error_values),
     color='blue', alpha=0.2, label='Error band (std deviation)'
 )
 
@@ -75,7 +88,7 @@ plt.grid(alpha=0.3)
 plt.tight_layout()
 
 # Salva il grafico come PNG
-output_plot = "K3_with_error_bands.png"
+output_plot = os.path.join(output_dir, "K3_with_error_bands.png")
 plt.savefig(output_plot, dpi=300)
 
 print(f"Plot saved as: {output_plot}")
