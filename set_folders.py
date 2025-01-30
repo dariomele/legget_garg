@@ -3,13 +3,13 @@ import numpy as np
 
 # Parametri configurabili
 base_dir      = "/mnt/project_mnt/farm_fs/dmelegari/legget_garg"
-shots_list    = ["1000", "10000", "100000"]  
+shots_list    = ["100"]  
 theta         = np.pi/2
 phi           = np.pi/2
-p_deco        = 1
+p_deco        = 0
 n_steps       = 1000
 simulate      = True
-noise         = False
+noise         = True
 n_simulations = 100
 
 # Funzione per creare lo script bash in ogni cartella
