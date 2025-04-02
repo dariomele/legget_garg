@@ -5,6 +5,22 @@ This is the official repository for the Quantum Non-Demolition Measurement (`QND
 The basic idea of the paper is to numerically investigate an alternative to the canonical Leggett-Garg inequalities by exploiting the so-called Quantum Non-Demolition Measurements (QNDM). The theoretical work showed that ND measurements 
 
 
+## Repository Structure
+
+- `/`: 
+- ``: 
+  - ``: 
+
+## Installation
+
+To install the `QNDM` library just clone the repository using the command
+```
+git clone https://github.com/dariomele/legget_garg/
+```
+
+
+
+
 
 ## Citation
 
