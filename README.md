@@ -9,7 +9,8 @@ The basic idea of the paper is to numerically investigate an alternative to the 
 
 - `/`: 
 - ``: 
-  - ``: 
+  - ``:
+- `mathematica/`: it contains all the Wolfram Mathematica code used for the project. Namely
 
 ## Installation
 
