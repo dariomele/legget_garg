@@ -2,7 +2,7 @@
 
 This is the official repository for the Quantum Non-Demolition Measurement (`QNDM`) algorithm, as described in  [arXiv:2502.17040](https://arxiv.org/abs/2502.17040).
 
-The basic idea of the paper is to numerically investigate an alternative to the canonical Leggett-Garg inequalities by exploiting the so-called Quantum Non-Demolition Measurements (QNDM). The theoretical work showed that ND measurements 
+The basic idea of the paper is to numerically investigate an alternative to the canonical Leggett-Garg (LG) inequalities by exploiting the so-called Quantum Non-Demolition Measurements (QNDM) to detect Macro-Reealism (MR) violations. The theoretical work showed that ND measurements always detect MR violation, even when LG inequalities hold, thus being a sufficient condition for MR violation
 
 
 ## Repository Structure
