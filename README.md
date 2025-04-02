@@ -1,1 +1,1 @@
-# Legget Garg and QNDM project
+## Legget Garg and QNDM project
