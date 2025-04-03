@@ -10,7 +10,7 @@ The basic idea of the paper is to numerically investigate an alternative to the 
 - `/`: 
 - ``: 
   - ``:
-- `mathematica/`: it contains all the Wolfram Mathematica code used for the project. Namely
+- `mathematica/`: it contains all the Wolfram Mathematica code used for the project. Namely the Fourier transform code, the code to make the plots of the P_ND, and the peak analysis
 
 ## Installation
 
